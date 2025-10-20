@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSCRAPER - Real-time Financial Intelligence</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: #15202B; 
+            color: #fff;
+        }
+        
+        .header {
+            background: #1a1a1a;
+            padding: 15px 20px;
+            border-bottom: 1px solid #38444d;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            display: inline-block;
+        }
+        
+        .stats {
+            float: right;
+            color: #8899a6;
+            font-size: 14px;
+            line-height: 28px;
+        }
+        
+        #feed {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .tweet {
+            background: #192734;
+            border: 1px solid #38444d;
+            border-radius: 12px;
+            padding: 15px;
+            
+            transition: all 0.2s ease;
+            margin-bottom: 80px; /* Space after complete email unit */; /* Space between complete tweets */
+        }
+        
+        .tweet:hover {
+            background: #1e3a4c;
+            border-color: #1DA1F2;
+        }
+        
+        .tweet-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 80px;
+            font-size: 14px;
+            color: #8899a6;
+        }
+        
+        .username {
+            color: #1DA1F2;
+            font-weight: bold;
+            margin-left: 5px;
+            font-size: 21px;
+        }
+        
+        .time {
+            margin-left: 10px;
+            color: #657786;
+        }
+        
+        .tweet-text {
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 80px;
+            color: #ffffff;
+        }
+        
+        .tweet-footer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #38444d;
+        }
+        
+        /* Sentiment Badges */
+        .sentiment {
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .sentiment.positive { 
+            background: #00d084; 
+            color: white;
+        }
+        
+        .sentiment.negative { 
+            background: #ff4757; 
+            color: white;
+        }
+        
+        .sentiment.neutral { 
+            background: #657786; 
+            color: white;
+        }
+        
+        /* AI Score */
+        .ai-score {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            background: #1DA1F2;
+            color: white;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .ai-score.high { background: #00d084; }
+        .ai-score.medium { background: #ffa500; }
+        .ai-score.low { background: #ff4757; }
+        
+        /* Keywords */
+        .keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .keyword {
+            padding: 3px 8px;
+            background: #2c3e50;
+            color: #1DA1F2;
+            border-radius: 12px;
+            font-size: 11px;
+            border: 1px solid #38444d;
+        }
+        
+        /* Rating System */
+        .rating-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stars {
+            display: inline-flex;
+            gap: 2px;
+        }
+        
+        .star {
+            cursor: pointer;
+            font-size: 18px;
+            color: #38444d;
+            transition: color 0.2s;
+        }
+        
+        .star:hover,
+        .star.active {
+            color: #ffa500;
+        }
+        
+        .rating-value {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .rating-input {
+            width: 50px;
+            padding: 2px 5px;
+            background: #192734;
+            border: 1px solid #38444d;
+            border-radius: 5px;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .save-rating {
+            padding: 3px 10px;
+            background: #1DA1F2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .save-rating:hover {
+            background: #0d8ed8;
+        }
+        
+        /* Market Impact */
+        .market-impact {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            border: 1px solid;
+        }
+        
+        .market-impact.high {
+            background: rgba(255, 71, 87, 0.2);
+            border-color: #ff4757;
+            color: #ff4757;
+        }
+        
+        .market-impact.medium {
+            background: rgba(255, 165, 0, 0.2);
+            border-color: #ffa500;
+            color: #ffa500;
+        }
+        
+        .market-impact.low {
+            background: rgba(101, 119, 134, 0.2);
+            border-color: #657786;
+            color: #657786;
+        }
+        
+        /* Category Badge */
+        .category {
+            padding: 3px 8px;
+            background: #2c3e50;
+            color: #8899a6;
+            border-radius: 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Update Timer */
+        #update-timer {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #update-timer button {
+            padding: 5px 10px;
+            background: #1DA1F2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        #update-timer button:hover {
+            background: #0d8ed8;
+        }
+    
+        /* Dual Score Display */
+        .score-container {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .user-score {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            background: #ffa500;
+            color: white;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .user-score.high { background: #00d084; }
+        .user-score.medium { background: #ffa500; }
+        .user-score.low { background: #ff4757; }
+
+    
+        .tweet:last-child {
+            margin-bottom: 0; /* No extra space after last tweet */
+        }
+    </style>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <meta http-equiv="refresh" content="301">
+</head>
+<body>
+    <div class="header">
+        <h1>📊 XSCRAPER - Financial Intelligence Feed</h1>
+        <div class="stats">
+            Total Items: <span id="total">{{ initial_items|length }}</span> | 
+            Last Update: <span id="last-update">Just now</span>
+        </div>
+    </div>
+    
+    <div id="tweets-container">
+        <!-- Server-side rendered tweets with ALL features -->
+        {% for item in initial_items %}
+        <div class="tweet" id="item-{{ item.id }}">
+            <div class="tweet-header">
+                <span class="icon">{{ '🐦' if item.type == 'tweet' else '📰' }}</span>
+                <span class="username">@{{ item.display_name or item.username or 'news' }}</span>
+                <span class="time">• {{ item.created_at_brazil }}</span>
+                {% if item.category %}
+                    <span class="category">{{ item.category }}</span>
+                {% endif %}
+            </div>
+            
+            
+            <!-- Email Subject/Title -->
+            {% if item.title %}
+            <div style="margin: 8px 0 12px 0;">
+                <span style="font-size: 21px; color: #e2e8f0; font-weight: 600; line-height: 1.3;">
+                    {{ item.title }}
+                </span>
+            </div>
+            {% endif %}
+            
+            <!-- Actors and Themes -->
+            {% if item.actors and item.actors|length > 0 %}
+            <div style="margin: 10px 0 5px 0;">
+                <span style="font-size: 11px; color: #8B9DC3; margin-right: 5px;">👥 Actors:</span>
+                {% for actor in item.actors %}
+                <span style="display: inline-block; padding: 2px 6px; margin: 2px; background: #1e3a5f; color: #e2e8f0; border-radius: 3px; font-size: 11px;">{{ actor }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if item.themes and item.themes|length > 0 %}
+            <div style="margin: 5px 0 10px 0;">
+                <span style="font-size: 11px; color: #8B9DC3; margin-right: 5px;">🏷️ Themes:</span>
+                {% for theme in item.themes %}
+                <span style="display: inline-block; padding: 2px 6px; margin: 2px; background: #2d3748; color: #a0aec0; border: 1px solid #4a5568; border-radius: 3px; font-size: 11px;">{{ theme }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="tweet-text">
+                <!-- Smart Summary -->
+                {% if item.smart_summary and item.smart_summary != '' %}
+                <div style="margin: 0 0 10px 0; padding: 12px; background-color: #2d3748; border-left: 4px solid #1DA1F2; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                    <div style="font-size: 14px; color: #a0aec0; font-weight: 600; text-transform: uppercase; margin-bottom: 5px;">
+                        {% if item.smart_category == 'ECONOMIC' %}📊 Economic Analysis{% elif item.smart_category == 'MACRO' %}📈 Market Analysis{% else %}📝 Summary{% endif %}
+                    </div>
+                    <div style="font-size: 17px; color: #e2e8f0; line-height: 1.5;">
+                        {{ item.smart_summary }}
+                    </div>
+                </div>
+                {% endif %}
+                {{ item.text|safe }}
+                
+                <!-- Rating System -->
+                <!-- AI Rating Display -->
+                {% if item.ai_score and item.ai_score > 0 %}
+                <span style="font-size: 13px; color: #8899a6; margin-right: 15px;">
+                    🤖 AI: <span style="color: #1DA1F2; font-weight: bold; font-size: 14px;">{{ "%.1f"|format(item.ai_score) }}/10</span>
+                </span>
+                {% endif %}
+                
+                <div class="rating-container" onclick="event.stopPropagation()">
+                    <div class="stars" data-id="{{ item.id }}">
+                        {% for i in range(1, 6) %}
+                            <span class="star {% if item.user_rating and item.user_rating >= i*2 %}active{% endif %}" 
+                                  onclick="event.stopPropagation(); setRating('{{ item.id }}', {{ i*2 }})">★</span>
+                        {% endfor %}
+                    </div>
+                    <div class="rating-value">
+                        <input type="number" 
+                               class="rating-input" 
+                               id="rating-{{ item.id }}" 
+                               value="{{ item.user_rating or '' }}" 
+                               min="0" max="10" step="0.5">
+                        <button class="save-rating" onclick="event.stopPropagation(); saveRating('{{ item.id }}')">Save</button>
+                    </div>
+            
+            
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+
+    <!-- Email Modal - MUST BE IN THE HTML! -->
+    <div id="emailModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000;">
+        <div class="modal-container" style="position: relative; width: 90%; max-width: 900px; height: 85%; margin: 40px auto; background: white; border-radius: 8px; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #e1e8ed; background: #f7f9fa; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <h2 id="modalTitle" style="margin: 0; font-size: 18px; color: #14171a;"></h2>
+                    <div id="modalMeta" style="margin-top: 8px; font-size: 14px; color: #657786;"></div>
+                </div>
+                <button onclick="closeEmailModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #657786; padding: 0; width: 32px; height: 32px; line-height: 1;">×</button>
+            </div>
+            <div class="modal-body" id="modalBody" style="flex: 1; overflow-y: auto; padding: 20px;">
+                <!-- Content will be inserted here -->
+            </div>
+        </div>
+    </div>
+    
+    
+    <!-- Update Timer -->
+    <div id="update-timer">
+        <span>Update in: <span id="countdown">5:00</span></span>
+        <button onclick="updateNow()">Update Now</button>
+    </div>
+    
+        
+    <script>
+    // Email popup handler
+    function openEmail(itemId) {
+        console.log('Opening email with ID:', itemId);
+        
+        const modal = document.getElementById('emailModal');
+        if (!modal) {
+            console.error('Modal element not found!');
+            return;
+        }
+        
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        
+        // Fetch the item data
+        fetch('/api/item/' + itemId)
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch');
+                return response.json();
+            })
+            .then(item => {
+                console.log('Item data loaded successfully');
+                
+                // Update modal content
+                const titleEl = document.getElementById('modalTitle');
+                const metaEl = document.getElementById('modalMeta');
+                const bodyEl = document.getElementById('modalBody');
+                
+                if (titleEl) titleEl.textContent = item.title || 'Email Content';
+                if (metaEl) metaEl.innerHTML = `From: ${item.display_name || item.username} • ${item.created_at_brazil}`;
+                
+                if (bodyEl) {
+                    if (item.full_html && item.full_html.length > 100) {
+                        // Use iframe for HTML content
+                        const iframe = document.createElement('iframe');
+                        iframe.style.width = '100%';
+                        iframe.style.border = 'none';
+                        iframe.style.minHeight = '600px';
+                        
+                        bodyEl.innerHTML = '';
+                        bodyEl.appendChild(iframe);
+                        
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        iframeDoc.open();
+                        iframeDoc.write(item.full_html);
+                        iframeDoc.close();
+                        
+                        // Adjust height after content loads
+                        setTimeout(() => {
+                            try {
+                                iframe.style.height = iframeDoc.body.scrollHeight + 'px';
+                            } catch(e) {
+                                console.log('Could not adjust iframe height');
+                            }
+                        }, 100);
+                    } else {
+                        bodyEl.innerHTML = `<div style="white-space: pre-wrap; font-family: sans-serif; line-height: 1.6;">${item.text || item.full_text || 'No content available'}</div>`;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error loading item:', error);
+                const bodyEl = document.getElementById('modalBody');
+                if (bodyEl) bodyEl.innerHTML = '<p style="color: red;">Error loading content. Please try again.</p>';
+            });
+    }
+    
+    // Close modal function
+    function closeEmailModal() {
+        const modal = document.getElementById('emailModal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }
+    
+    // Setup click handlers when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Setting up click handlers for all tweet items...');
+        
+        // Use a single delegated event listener on the document body
+        document.body.addEventListener('click', function(event) {
+            // Check if clicked element is inside a tweet
+            const tweetEl = event.target.closest('.tweet');
+            
+            if (tweetEl && tweetEl.id && tweetEl.id.startsWith('item-')) {
+                // Don't open modal if clicking on links or buttons
+                if (event.target.tagName === 'A' || 
+                    event.target.tagName === 'BUTTON' || 
+                    event.target.closest('button') ||
+                    event.target.closest('a')) {
+                    return;
+                }
+                
+                // Extract the item ID and open modal
+                const itemId = tweetEl.id.replace('item-', '');
+                if (itemId) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    openEmail(itemId);
+                }
+            }
+        });
+        
+        console.log('Click handlers attached to document body for all tweets');
+        
+        // Add visual feedback
+        const tweets = document.querySelectorAll('.tweet');
+        console.log(`Found ${tweets.length} tweet elements`);
+        
+        // Verify all tweets have IDs
+        tweets.forEach((tweet, index) => {
+            if (!tweet.id) {
+                console.warn(`Tweet at index ${index} missing ID!`);
+            } else {
+                console.log(`Tweet ${index}: ${tweet.id}`);
+            }
+        });
+    });
+    
+    // ESC key to close modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeEmailModal();
+        }
+    });
+    
+    // Auto-refresh countdown timer
+    let refreshInterval = 5 * 60; // 5 minutes in seconds
+    let timeRemaining = refreshInterval;
+    
+    function updateCountdown() {
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        const display = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        
+        const countdownElement = document.getElementById('countdown');
+        if (countdownElement) {
+            countdownElement.textContent = display;
+        }
+        
+        timeRemaining--;
+        
+        if (timeRemaining < 0) {
+            // Reset timer and refresh
+            timeRemaining = refreshInterval;
+            window.location.reload();
+        }
+    }
+    
+    // Start countdown
+    setInterval(updateCountdown, 1000);
+    updateCountdown(); // Initial call
+    
+        // Rating functions
+        function setRating(itemId, rating) {
+            event.stopPropagation();
+            
+            // Update the input field
+            const input = document.getElementById('rating-' + itemId);
+            if (input) {
+                input.value = rating;
+            }
+            
+            // Update star display
+            const stars = document.querySelectorAll('[data-id="' + itemId + '"] .star');
+            stars.forEach((star, index) => {
+                if ((index + 1) * 2 <= rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+        
+        function saveRating(itemId) {
+            // Get the input value
+            const input = document.getElementById('rating-' + itemId);
+            if (!input) {
+                console.error('Rating input not found for item:', itemId);
+                alert('Rating input not found');
+                return;
+            }
+            
+            const rating = parseFloat(input.value);
+            
+            if (isNaN(rating) || rating < 0 || rating > 10) {
+                alert('Please enter a valid rating between 0 and 10');
+                return;
+            }
+            
+            // Find the save button for this item
+            const button = document.querySelector(`button[onclick*="${itemId}"]`);
+            
+            // Save to backend
+            fetch('/api/rate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    item_id: itemId,
+                    rating: rating
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Visual feedback
+                    if (button) {
+                        const originalText = button.textContent;
+                        button.textContent = '✓ Saved';
+                        button.style.background = '#00ba7c';
+                        
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                            button.style.background = '';
+                        }, 2000);
+                    }
+                    
+                    console.log('Rating saved successfully:', rating);
+                } else {
+                    console.error('Server returned error:', data);
+                    alert('Failed to save rating: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error saving rating:', error);
+                alert('Network error saving rating. Please try again.');
+            });
+        }
+
+
+    </script>
+
+</body>
+</html>

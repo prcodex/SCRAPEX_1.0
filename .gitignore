@@ -1,0 +1,9 @@
+*.log
+*.pyc
+__pycache__/
+.env
+gmail_env.sh
+secrets.toml
+sage_ratings.json
+sage_enhanced_cache.json
+google_drive_credentials.json

@@ -1,0 +1,40 @@
+{
+    "blocked_senders": [
+        "Adobe Acrobat",
+        "BI Alert (BLOOMBERG BI ANALYST)",
+        "Chelsea with IFTTT",
+        "Essential II",
+        "HomeTheaterShack.com",
+        "Medium Daily Digest",
+        "Mehdi Unfiltered",
+        "News Alert (BLOOMBERG)",
+        "Octoparse",
+        "OnTheMarket Property Alerts",
+        "PDF By Andrei Neagu",
+        "Pinterest",
+        "Samsung",
+        "The Free Press",
+        "The Multibagger Playbook",
+        "TikTok",
+        "TrueFire",
+        "Ultimate Guitar",
+        "Yascha Mounk",
+        "YouTube"
+    ],
+    "blocked_emails": [
+        "noreply@email.com",
+        "@medium.com"
+    ],
+    "blocked_patterns": [
+        "Complete a survey",
+        "Medium Daily",
+        "Renewal Reminder",
+        "Samsung",
+        "payment receipt",
+        "promotion",
+        "tik tok",
+        "tiktok"
+    ],
+    "reason": "Selective blocking: Keep News Alert and BI Alert (BLOOMBERG) blocked, allow myFT and general Bloomberg emails. Added TikTok blocking - Updated Oct 10, 2025",
+    "date_updated": "2025-10-10"
+}
