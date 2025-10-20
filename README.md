@@ -299,3 +299,45 @@ Proprietary - All Rights Reserved
 ---
 
 **SCRAPEX 1.0** - Intelligent Email Processing at Scale 🚀
+
+## 🔐 Security & Authentication
+
+### Password Protection (v1.1)
+
+SCRAPEX now includes password authentication with cookie-based sessions:
+
+**Features:**
+- 🔒 Password-protected access
+- 🍪 30-day "Remember Me" cookie
+- 🔑 Environment variable password configuration
+- 🛡️ Secure session management
+
+**Setup:**
+
+```bash
+# 1. Set your password
+export SCRAPEX_PASSWORD='your-secure-password-here'
+
+# 2. Start authenticated version
+./sage_system/start_sage_auth.sh
+
+# 3. Access
+http://your-server:8540
+# Login with your password
+# Check "Remember me" to stay logged in for 30 days
+```
+
+**Change Password:**
+
+```bash
+# Edit start_sage_auth.sh and change:
+export SCRAPEX_PASSWORD='your-new-password'
+
+# Then restart:
+pkill -f sage_twitter
+./sage_system/start_sage_auth.sh
+```
+
+**Default Credentials:**
+- Password: `scrapex2025` (⚠️ **CHANGE THIS IMMEDIATELY!**)
+
